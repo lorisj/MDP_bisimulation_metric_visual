@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style type="text/css">
+        #network-container {
+            height: 400px;
+        }
+    </style>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+</head>
+
+<body>
+    <div id="edge-types-container"></div>
+    <div>
+        <label for="checkboxSource">Filter by Source:</label>
+        <input type="checkbox" id="checkboxSource">
+        <br>
+        <label for="checkboxTarget">Filter by Target:</label>
+        <input type="checkbox" id="checkboxTarget">
+    </div>
+    <div id="network-container"></div>
+
+    <script>
+        var nodes = [{"id": "0", "label": "0"}, {"id": "1", "label": "1"}, {"id": "2", "label": "2"}, {"id": "3", "label": "3"}, {"id": "4", "label": "4"}, {"id": "5", "label": "5"}, {"id": "6", "label": "6"}, {"id": "7", "label": "7"}, {"id": "8", "label": "8"}];
+
+        var edges = [{"from": "0", "to": "0", "label": "1.000", "type": "up"}, {"from": "0", "to": "0", "label": "0.150", "type": "down"}, {"from": "0", "to": "4", "label": "0.150", "type": "down"}, {"from": "0", "to": "3", "label": "0.700", "type": "down"}, {"from": "0", "to": "0", "label": "1.000", "type": "left"}, {"from": "0", "to": "0", "label": "0.150", "type": "right"}, {"from": "0", "to": "4", "label": "0.150", "type": "right"}, {"from": "0", "to": "1", "label": "0.700", "type": "right"}, {"from": "1", "to": "1", "label": "1.000", "type": "up"}, {"from": "1", "to": "1", "label": "0.100", "type": "down"}, {"from": "1", "to": "3", "label": "0.100", "type": "down"}, {"from": "1", "to": "5", "label": "0.100", "type": "down"}, {"from": "1", "to": "4", "label": "0.700", "type": "down"}, {"from": "1", "to": "1", "label": "0.150", "type": "left"}, {"from": "1", "to": "3", "label": "0.150", "type": "left"}, {"from": "1", "to": "0", "label": "0.700", "type": "left"}, {"from": "1", "to": "1", "label": "0.150", "type": "right"}, {"from": "1", "to": "5", "label": "0.150", "type": "right"}, {"from": "1", "to": "2", "label": "0.700", "type": "right"}, {"from": "2", "to": "2", "label": "1.000", "type": "up"}, {"from": "2", "to": "2", "label": "0.150", "type": "down"}, {"from": "2", "to": "4", "label": "0.150", "type": "down"}, {"from": "2", "to": "5", "label": "0.700", "type": "down"}, {"from": "2", "to": "2", "label": "0.150", "type": "left"}, {"from": "2", "to": "4", "label": "0.150", "type": "left"}, {"from": "2", "to": "1", "label": "0.700", "type": "left"}, {"from": "2", "to": "2", "label": "1.000", "type": "right"}, {"from": "3", "to": "3", "label": "0.150", "type": "up"}, {"from": "3", "to": "1", "label": "0.150", "type": "up"}, {"from": "3", "to": "0", "label": "0.700", "type": "up"}, {"from": "3", "to": "3", "label": "0.150", "type": "down"}, {"from": "3", "to": "7", "label": "0.150", "type": "down"}, {"from": "3", "to": "6", "label": "0.700", "type": "down"}, {"from": "3", "to": "3", "label": "1.000", "type": "left"}, {"from": "3", "to": "3", "label": "0.100", "type": "right"}, {"from": "3", "to": "1", "label": "0.100", "type": "right"}, {"from": "3", "to": "7", "label": "0.100", "type": "right"}, {"from": "3", "to": "4", "label": "0.700", "type": "right"}, {"from": "4", "to": "4", "label": "0.100", "type": "up"}, {"from": "4", "to": "0", "label": "0.100", "type": "up"}, {"from": "4", "to": "2", "label": "0.100", "type": "up"}, {"from": "4", "to": "1", "label": "0.700", "type": "up"}, {"from": "4", "to": "4", "label": "0.100", "type": "down"}, {"from": "4", "to": "6", "label": "0.100", "type": "down"}, {"from": "4", "to": "8", "label": "0.100", "type": "down"}, {"from": "4", "to": "7", "label": "0.700", "type": "down"}, {"from": "4", "to": "4", "label": "0.100", "type": "left"}, {"from": "4", "to": "0", "label": "0.100", "type": "left"}, {"from": "4", "to": "6", "label": "0.100", "type": "left"}, {"from": "4", "to": "3", "label": "0.700", "type": "left"}, {"from": "4", "to": "4", "label": "0.100", "type": "right"}, {"from": "4", "to": "2", "label": "0.100", "type": "right"}, {"from": "4", "to": "8", "label": "0.100", "type": "right"}, {"from": "4", "to": "5", "label": "0.700", "type": "right"}, {"from": "5", "to": "5", "label": "0.150", "type": "up"}, {"from": "5", "to": "1", "label": "0.150", "type": "up"}, {"from": "5", "to": "2", "label": "0.700", "type": "up"}, {"from": "5", "to": "5", "label": "0.150", "type": "down"}, {"from": "5", "to": "7", "label": "0.150", "type": "down"}, {"from": "5", "to": "8", "label": "0.700", "type": "down"}, {"from": "5", "to": "5", "label": "0.100", "type": "left"}, {"from": "5", "to": "1", "label": "0.100", "type": "left"}, {"from": "5", "to": "7", "label": "0.100", "type": "left"}, {"from": "5", "to": "4", "label": "0.700", "type": "left"}, {"from": "5", "to": "5", "label": "1.000", "type": "right"}, {"from": "6", "to": "6", "label": "0.150", "type": "up"}, {"from": "6", "to": "4", "label": "0.150", "type": "up"}, {"from": "6", "to": "3", "label": "0.700", "type": "up"}, {"from": "6", "to": "6", "label": "1.000", "type": "down"}, {"from": "6", "to": "6", "label": "1.000", "type": "left"}, {"from": "6", "to": "6", "label": "0.150", "type": "right"}, {"from": "6", "to": "4", "label": "0.150", "type": "right"}, {"from": "6", "to": "7", "label": "0.700", "type": "right"}, {"from": "7", "to": "7", "label": "0.100", "type": "up"}, {"from": "7", "to": "3", "label": "0.100", "type": "up"}, {"from": "7", "to": "5", "label": "0.100", "type": "up"}, {"from": "7", "to": "4", "label": "0.700", "type": "up"}, {"from": "7", "to": "7", "label": "1.000", "type": "down"}, {"from": "7", "to": "7", "label": "0.150", "type": "left"}, {"from": "7", "to": "3", "label": "0.150", "type": "left"}, {"from": "7", "to": "6", "label": "0.700", "type": "left"}, {"from": "7", "to": "7", "label": "0.150", "type": "right"}, {"from": "7", "to": "5", "label": "0.150", "type": "right"}, {"from": "7", "to": "8", "label": "0.700", "type": "right"}, {"from": "8", "to": "8", "label": "0.150", "type": "up"}, {"from": "8", "to": "4", "label": "0.150", "type": "up"}, {"from": "8", "to": "5", "label": "0.700", "type": "up"}, {"from": "8", "to": "8", "label": "1.000", "type": "down"}, {"from": "8", "to": "8", "label": "0.150", "type": "left"}, {"from": "8", "to": "4", "label": "0.150", "type": "left"}, {"from": "8", "to": "7", "label": "0.700", "type": "left"}, {"from": "8", "to": "8", "label": "1.000", "type": "right"}, {"from": 0, "to": 1, "label": "0.613", "type": "Metric", "arrows": ""}, {"from": 0, "to": 2, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 0, "to": 3, "label": "0.613", "type": "Metric", "arrows": ""}, {"from": 0, "to": 4, "label": "0.690", "type": "Metric", "arrows": ""}, {"from": 0, "to": 5, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 0, "to": 6, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 0, "to": 7, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 0, "to": 8, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 1, "to": 0, "label": "0.578", "type": "Metric", "arrows": ""}, {"from": 1, "to": 2, "label": "0.578", "type": "Metric", "arrows": ""}, {"from": 1, "to": 3, "label": "0.610", "type": "Metric", "arrows": ""}, {"from": 1, "to": 4, "label": "0.683", "type": "Metric", "arrows": ""}, {"from": 1, "to": 5, "label": "0.610", "type": "Metric", "arrows": ""}, {"from": 1, "to": 6, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 1, "to": 7, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 1, "to": 8, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 2, "to": 0, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 2, "to": 1, "label": "0.613", "type": "Metric", "arrows": ""}, {"from": 2, "to": 3, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 2, "to": 4, "label": "0.690", "type": "Metric", "arrows": ""}, {"from": 2, "to": 5, "label": "0.613", "type": "Metric", "arrows": ""}, {"from": 2, "to": 6, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 2, "to": 7, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 2, "to": 8, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 3, "to": 0, "label": "0.578", "type": "Metric", "arrows": ""}, {"from": 3, "to": 1, "label": "0.610", "type": "Metric", "arrows": ""}, {"from": 3, "to": 2, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 3, "to": 4, "label": "0.683", "type": "Metric", "arrows": ""}, {"from": 3, "to": 5, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 3, "to": 6, "label": "0.578", "type": "Metric", "arrows": ""}, {"from": 3, "to": 7, "label": "0.610", "type": "Metric", "arrows": ""}, {"from": 3, "to": 8, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 4, "to": 0, "label": "0.501", "type": "Metric", "arrows": ""}, {"from": 4, "to": 1, "label": "0.565", "type": "Metric", "arrows": ""}, {"from": 4, "to": 2, "label": "0.501", "type": "Metric", "arrows": ""}, {"from": 4, "to": 3, "label": "0.565", "type": "Metric", "arrows": ""}, {"from": 4, "to": 5, "label": "0.565", "type": "Metric", "arrows": ""}, {"from": 4, "to": 6, "label": "0.501", "type": "Metric", "arrows": ""}, {"from": 4, "to": 7, "label": "0.565", "type": "Metric", "arrows": ""}, {"from": 4, "to": 8, "label": "0.501", "type": "Metric", "arrows": ""}, {"from": 5, "to": 0, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 5, "to": 1, "label": "0.610", "type": "Metric", "arrows": ""}, {"from": 5, "to": 2, "label": "0.578", "type": "Metric", "arrows": ""}, {"from": 5, "to": 3, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 5, "to": 4, "label": "0.683", "type": "Metric", "arrows": ""}, {"from": 5, "to": 6, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 5, "to": 7, "label": "0.610", "type": "Metric", "arrows": ""}, {"from": 5, "to": 8, "label": "0.578", "type": "Metric", "arrows": ""}, {"from": 6, "to": 0, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 6, "to": 1, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 6, "to": 2, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 6, "to": 3, "label": "0.613", "type": "Metric", "arrows": ""}, {"from": 6, "to": 4, "label": "0.690", "type": "Metric", "arrows": ""}, {"from": 6, "to": 5, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 6, "to": 7, "label": "0.613", "type": "Metric", "arrows": ""}, {"from": 6, "to": 8, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 7, "to": 0, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 7, "to": 1, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 7, "to": 2, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 7, "to": 3, "label": "0.610", "type": "Metric", "arrows": ""}, {"from": 7, "to": 4, "label": "0.683", "type": "Metric", "arrows": ""}, {"from": 7, "to": 5, "label": "0.610", "type": "Metric", "arrows": ""}, {"from": 7, "to": 6, "label": "0.578", "type": "Metric", "arrows": ""}, {"from": 7, "to": 8, "label": "0.578", "type": "Metric", "arrows": ""}, {"from": 8, "to": 0, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 8, "to": 1, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 8, "to": 2, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 8, "to": 3, "label": "0.744", "type": "Metric", "arrows": ""}, {"from": 8, "to": 4, "label": "0.690", "type": "Metric", "arrows": ""}, {"from": 8, "to": 5, "label": "0.613", "type": "Metric", "arrows": ""}, {"from": 8, "to": 6, "label": "0.685", "type": "Metric", "arrows": ""}, {"from": 8, "to": 7, "label": "0.613", "type": "Metric", "arrows": ""}];
+
+        var edgeTypes = {"up": {"color": "yellow", "arrows": true}, "down": {"color": "brown", "arrows": true}, "left": {"color": "green", "arrows": true}, "right": {"color": "red", "arrows": true}, "Metric": {"color": "black", "arrows": false}};
+
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+
+        var options = {
+            edges: {
+                arrows: 'to',
+                smooth: false
+            },
+            physics: {
+                enabled: false
+            }
+        };
+
+        var container = document.getElementById('network-container');
+        var network = new vis.Network(container, data, options);
+
+        var edgeTypesContainer = document.getElementById('edge-types-container');
+        for (var type in edgeTypes) {
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = 'checkbox-' + type;
+            checkbox.checked = false;
+
+            var label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.appendChild(document.createTextNode(' ' + type));
+
+            edgeTypesContainer.appendChild(checkbox);
+            edgeTypesContainer.appendChild(label);
+            edgeTypesContainer.appendChild(document.createElement('br'));
+        }
+
+        network.on('selectNode', function (params) {
+            updateEdgeVisibility(params.nodes[0]);
+        });
+
+        network.on('deselectNode', function (params) {
+            updateEdgeVisibility();
+        });
+
+        document.getElementById('checkboxSource').addEventListener('change', function () {
+            updateEdgeVisibility(network.getSelectedNodes()[0]);
+        });
+
+        document.getElementById('checkboxTarget').addEventListener('change', function () {
+            updateEdgeVisibility(network.getSelectedNodes()[0]);
+        });
+
+        for (var type in edgeTypes) {
+            document.getElementById('checkbox-' + type).addEventListener('change', function () {
+                updateEdgeVisibility(network.getSelectedNodes()[0]);
+            });
+        }
+
+        function updateEdgeVisibility(selectedNodeId) {
+            var filterSource = document.getElementById('checkboxSource').checked;
+            var filterTarget = document.getElementById('checkboxTarget').checked;
+
+            edges.forEach(function (edge) {
+                var checkbox = document.getElementById('checkbox-' + edge.type);
+                if (checkbox.checked && (!filterSource && !filterTarget ||
+                    (filterSource && edge.from == selectedNodeId) ||
+                    (filterTarget && edge.to == selectedNodeId))) {
+                    edge.hidden = false;
+                    edge.color = edgeTypes[edge.type].color;
+                } else {
+                    edge.hidden = true;
+                }
+                network.body.data.edges.update(edge);
+            });
+        }
+
+        // Initialize edge visibility
+        updateEdgeVisibility();
+    </script>
+</body>
+
+</html>

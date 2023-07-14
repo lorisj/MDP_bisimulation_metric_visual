@@ -1,0 +1,44 @@
+[
+    {
+        "id": "s1-a1-s1",
+        "from": "s1",
+        "to": "s1",
+        "type": "a1",
+        "label": "R: 1, P: 0.3"
+    },
+    {
+        "id": "s1-a1-s2",
+        "from": "s1",
+        "to": "s2",
+        "type": "a1",
+        "label": "R: 1, P: 0.7"
+    },
+    {
+        "id": "s1-a2-s1",
+        "from": "s1",
+        "to": "s1",
+        "type": "a2",
+        "label": "R: 2, P: 1.0"
+    },
+    {
+        "id": "s2-a1-s1",
+        "from": "s2",
+        "to": "s1",
+        "type": "a1",
+        "label": "R: 0, P: 0.4"
+    },
+    {
+        "id": "s2-a1-s2",
+        "from": "s2",
+        "to": "s2",
+        "type": "a1",
+        "label": "R: 3, P: 0.6"
+    },
+    {
+        "id": "s2-a2-s2",
+        "from": "s2",
+        "to": "s2",
+        "type": "a2",
+        "label": "R: 2, P: 1.0"
+    }
+]
