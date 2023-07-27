@@ -7,10 +7,10 @@ def wasserstein_metric(P, Q, h) -> float:
         
     if len(P) > len(Q): # pad Q with zeros
         Q = np.concatenate((Q, np.zeros(len(P) - len(Q))))
-        print("WARNING: CONCAT")
+        print("WARNING: probability input to wasserstein_metric() function has differing lengths.")
     elif len(Q) > len(P):
         P = np.concatenate((P, np.zeros(len(Q) - len(P))))
-        print("WARNING: CONCAT")
+        print("WARNING: probability input to wasserstein_metric() function has differing lengths.")
 
     u = cp.Variable(len(P))
 
@@ -28,7 +28,8 @@ def wasserstein_metric(P, Q, h) -> float:
     old_return = cp.max(u).value
     # Maybe check if old_return exists? return "?" if not
     return old_return.item()
-    
+
+
 
 class MarkovDecisionProcess:
     def __init__(self, states, actions, transition_function, reward_function, discount_factor):
@@ -39,6 +40,8 @@ class MarkovDecisionProcess:
         self.discount_factor = discount_factor
         self.policy = {state: actions[0] for state in states}  # Set an initial policy
         self.values = {state: 0 for state in states}  # Initialize value table
+        num_states = len(states)
+        self.metric  = np.ones([num_states,num_states])- np.eye(num_states) # Initial bisimulation metric
 
     def set_policy(self, policy):
         """
@@ -61,20 +64,20 @@ class MarkovDecisionProcess:
             The next state.
         """
         return self.transition_function[state][action]
+    
 
-    def get_reward(self, state, action, next_state):
+    def get_reward(self, state, action):
         """
         Get the reward for a state transition.
 
         Args:
             state: The current state.
             action: The action taken.
-            next_state: The state transitioned to.
 
         Returns:
             The reward for the state transition.
         """
-        return self.reward_function[state][action][next_state]
+        return self.reward_function[state][action]
 
     def get_expected_value(self, state):
         """
@@ -122,16 +125,42 @@ class MarkovDecisionProcess:
                     for next_state in self.states))
         return self.policy
     
+    
+    def iterate_bisimulation_matrix(self):
+        """
+        Generate a symmetric matrix where each entry i,j represents the iterated bisimulation metric between the 
+        transition probabilities of states i and j under any action.
 
+        Parameters:
+            h (2D numpy array): The previous metric used to compute the new metric.
+
+        Returns:
+            new_metric_matrix (2D numpy array): A symmetric matrix where each entry i,j is the 
+            iterated bisimulation between the transition probabilities of states i and j under any action.
+        """
+        num_states = len(self.states)
+        new_metric_matrix = np.zeros((num_states, num_states))
+        for i in range(num_states):
+            for j in range(i+1):
+                current_distance = max(
+                    #(1-self.discount_factor) * abs(self.get_reward(i,action)) + self.discount_factor *
+                    wasserstein_metric(
+                        self.get_probability_vector(i, action),
+                        self.get_probability_vector(j, action),
+                        self.metric
+                    )
+                    for action in self.actions
+                )
+
+                new_metric_matrix[i, j] = current_distance
+                # Use symmetry to avoid duplicate calculations
+                new_metric_matrix[j, i] = current_distance
+
+        self.metric = new_metric_matrix
+        return new_metric_matrix
     
-    def calculate_metric(self, s_1, s_2):
-        
-        n  = len(self.states)
-        
-        initial_metric = np.ones([n,n])- np.eye(n)
-        array = [wasserstein_metric(self.get_probability_vector(s_1,action),self.get_probability_vector(s_2,action),initial_metric)  for action in self.actions]
-        return max(array)
-    
+    def calculate_metric(self, s1, s2):
+        return self.metric[s1, s2]
 
     def generate_mdp_visualization_data(self, action_colors = []):
         nodes = []
@@ -196,7 +225,7 @@ class MarkovDecisionProcess:
                     edges.append({
                         'from': state_1,
                         'to': state_2,
-                        'label': f"{dummy_value:.3f}",
+                        'label': f"{dummy_value:.5f}",
                         'type': "Metric",
                         'arrows': ''
                     })         
@@ -314,7 +343,7 @@ def generate_6_bisimular_mdp():
     4: {"A": {3: 0.5, 5: 0.5}},
     5: {"A": {4: 0.5, 5: 0.5}},
     }
-    reward_function = {s: {a: {}} for s in states for a in actions}
+    reward_function = {s: {a: {0}} for s in states for a in actions}
 
     
 
@@ -363,15 +392,49 @@ def generate_grid_mdp(num_rows, num_cols, correct_prob, discount_factor, good_re
 
 def main():
    
-    # Define the output directory
-    mdp, action_colors = generate_grid_mdp(3,3,0.7,0.9,1,-1)
-    #mdp, action_colors = generate_6_bisimular_mdp()
+    num_states = 4
+    states = list(range(num_states))
+    actions = ["A"]
+    transition_function = {
+    0: {"A": {0: 1}},
+    1: {"A": {1: 1}},
+    2: {"A": {0: 0.1, 1: 0.9}},
+    3: {"A": {0: 0.9, 1: 0.1}},
+    }
+    reward_function = {s: {a: {0}} for s in states for a in actions}
+    
+    discount_factor = 0.9
+    mdp = MarkovDecisionProcess(states, actions, transition_function, reward_function, discount_factor)
+    action_colors = {
+        "A": "red"
+    }
+
+    html_file_name = "intersection.html"
+    
+    dir = "."
+    # Generate HTML
+    mdp.generate_mdp_html(f"{dir}/template_labeled_graph.html", html_file_name, action_colors)
+    os.system('firefox ' + f"{dir}/{html_file_name}")
+    
+    exit()
+
+
+    #mdp, action_colors = generate_grid_mdp(3,3,0.7,0.9,1,-1)
+    mdp, action_colors = generate_6_bisimular_mdp()
+
+    for i in range(2):
+        mdp.iterate_bisimulation_matrix()
+
+    print(mdp.metric)
 
     dir = "."
-    html_file_name = "grid.html"
-    # Generate the HTML for visualizing the MDP
+    
+    html_file_name = "6bisim.html"
+    #html_file_name = "grid.html"
+    
+    # Generate HTML
     mdp.generate_mdp_html(f"{dir}/template_labeled_graph.html", html_file_name, action_colors)
-
+    
  
 
 
